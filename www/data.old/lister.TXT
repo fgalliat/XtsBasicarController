@@ -1,8 +1,0 @@
-## FILE NAME : lister
-##
-##
-## USE:PREPROCESSOR
-##
-##
-10 INIT #1, "COM:", 8000, "B"
-20 to be finised !!
