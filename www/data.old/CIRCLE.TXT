@@ -1,0 +1,10 @@
+## X-07 BASIC FILE
+## Converted by Xtase fgalliat @ 10/2016
+##
+## FILE NAME : CIRCLE
+##
+## 
+## USE:PREPROCESSOR
+## 
+10 A$=CHR$(255)+CHR$(254)+"DRCIRCLE"+CHR$(15)+CHR$(15)+CHR$(15)
+20 PRINT A$

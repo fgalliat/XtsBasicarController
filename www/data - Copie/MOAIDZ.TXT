@@ -1,0 +1,21 @@
+## FILE NAME : MOAIDZ
+
+pour le port //
+ --> utiliser un PCF8574 + une ligne de strobe
+ --> laisser le busy a l'etat bas
+ --> see : http://garagelab.com/profiles/blogs/tutorial-arduino-i-o-port-expander-with-pcf8574
+
+
+commencer par le // port
+  --> 1. sur le co-proc video
+      en plus de la SD on pourrait monter un speaker et lire des notes en asynchrone
+      (chargement du buffer // playback du buffer (arduino)
+      could also play some thunes that were stored on SDCard
+  
+
+  --> 4. LATER : monter un DB25 male sur l'autre bout du cable pour 
+   --- pouvoir le reutiliser comme a l'origine
+
+
+see : https://courses.engr.illinois.edu/ece390/books/labmanual/parallel-comm.html
+      http://retired.beyondlogic.org/spp/parallel.htm

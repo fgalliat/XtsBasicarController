@@ -1,0 +1,14 @@
+## X-07 BASIC FILE
+## Converted by Xtase fgalliat @ 10/2016
+##
+## FILE NAME : READCM
+##
+## 
+## USE:PREPROCESSOR
+## 
+5 ON ERROR GOTO 30
+10 INIT #1,"COM:",4800,"B"
+15 A=INP(#1)
+17 IF A < 5 OR A > 180 THEN GOTO 15
+20 PRINT CHR$(A);
+30 GOTO 15

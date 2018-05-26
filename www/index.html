@@ -1,0 +1,335 @@
+<html>
+<head>
+  <title>Virtual Tape Manager</title>
+  
+  <script type="text/javascript" src="./config/config.js"></script>
+  <script type="text/javascript" src="./libs/services.js"></script>
+  <script type="text/javascript" src="./libs/libajax.js"></script>
+  <script type="text/javascript" src="./libs/utils.js"></script>
+
+ <!-- GEM css file -->
+ <link href="files/lgd.css" rel="stylesheet" type="text/css">
+
+ <!-- jQueryUI files -->
+ <link rel="stylesheet" href="./libs/jQueryUI1.12/jquery-ui.css">
+ <script src="./libs/jQueryUI1.12/external/jquery/jquery.js"></script>
+ <script src="./libs/jQueryUI1.12/jquery-ui.js"></script>
+
+ <!-- CodeMirror files -->
+ <script type="text/javascript" src="./libs/codemirror5/codemirror.js"></script>
+ <script type="text/javascript" src="./libs/codemirror5/languages/clike.js"></script> <!-- java too -->
+ <!-- 
+ <script type="text/javascript" src="../libs/codemirror5/languages/javascript.js"></script>
+ <script type="text/javascript" src="../libs/codemirror5/languages/lua.js"></script>
+ <script type="text/javascript" src="../libs/codemirror5/languages/htmlmixed.js"></script> -->
+ <script type="text/javascript" src="./libs/codemirror5/languages/basic.js"></script>
+
+ <script type="text/javascript" src="./libs/codemirror5/addon/search/search.js"></script>
+ <script type="text/javascript" src="./libs/codemirror5/addon/search/searchcursor.js"></script>
+ <script type="text/javascript" src="./libs/codemirror5/addon/search/jumpToLine.js"></script>
+
+ <script type="text/javascript" src="./libs/codemirror5/addon/edit/matchbrackets.js"></script>
+
+ <link rel="stylesheet" type="text/css" href="./libs/codemirror5/codemirror.css" >
+ <!--<link rel="stylesheet" type="text/css" href="../libs/codemirror5/theme/pastel-on-dark.css" >-->
+ <link rel="stylesheet" type="text/css" href="./libs/codemirror5/theme/eclipse.css" >
+
+ <script type="text/javascript" src="./libs/codemirror5/addon/dialog/dialog.js"></script>
+ <link rel="stylesheet" type="text/css" href="./libs/codemirror5/addon/dialog/dialog.css" >
+
+ <!-- ================================= -->
+
+ <script type="text/javascript" src="./window.js"></script>
+
+<style>
+ .ui-resizable-helper { border: 2px dotted #00F; }
+</style>
+
+</head>
+
+<body bgcolor="#00FF00">
+
+<script>
+  var DISK_ROOT = "web:/data/";
+
+
+  var editObj0 = null;
+  var editObj1 = null;
+
+  var file = DISK_ROOT+"GAME.BAS";
+
+  var _reloadCurrentSource = null; // futur holder for fct
+  var _saveCurrentSource = null; // futur holder for fct
+  var _newSource = null;                     
+                       
+  function load(tape) {
+    file = DISK_ROOT+tape;
+    //reloadCurrentSource();
+    _reloadCurrentSource();
+  }
+                       
+  function clickDrive(driveName) {
+    if ( driveName == "A" ) {
+      if ( !confirm("Listen to X-07 ?") ) { return; }
+      invokeService("tape_read", "GET", [  ] , function(rawData, url, data) {
+		   	  editObj0.getDoc().setValue( rawData );
+		   	  var modeStr = "basic";
+		   	  editObj0.setOption( "mode", modeStr );
+              // TODO : prompt from tape "## ..."
+              var tape = prompt("Tape name");
+              if ( tape != null ) {
+                file = DISK_ROOT+tape+".BAS";
+                _saveCurrentSource();
+              }
+		   } );
+    } else if ( driveName == "B" ) {
+      _newSource();
+    } else if ( driveName == "C" ) {
+      invokeService("tape_ls", "GET", [  ] , function(rawData, url, data) {
+          var code = "";
+          var arry = rawData.split("\n");
+          for(var i=0; i < arry.length; i++) {
+            code += "<option value='"+arry[i]+"'>"+arry[i]+"</option>\n";
+          }
+        
+        if ( $("#winDriveC").length == 1 ) {
+          $("#winDriveC").show();
+        } else {
+          addWindow("winDriveC");
+        }
+        $("#content_winDriveC").html( "<select size="+arry.length+" style='border:none;overflow-y:hidden' ondblclick='load(this.value)'>"+code+"</select>" );
+        
+      } );
+    } else if ( driveName == "trash" ) {
+      location.href="../"
+    } else {
+      alert("clicked on drive : "+driveName);
+    }
+  }
+
+  $( function() {
+    //var winObj = $(".win #win1");
+    var winObj = $("#win1");
+
+    
+    var winSetSize = function(width,height) {
+      var contentDiv = $(".content")[0];
+      contentDiv.style.height = (height - 30)+"px";
+      contentDiv.style.width = (width - 10)+"px";
+      
+      editorResize("workingCopy");
+      editorResize("convertedText");
+    }
+
+    var winSetContent = function(_html) {
+      $(".content").html(_html);
+    }
+
+
+    var editorResize = function(editorID) {
+      var editor0 = $("#"+editorID)[0];
+      if ( editor0 == null ) { return; }
+
+      var h = $(".content")[0].style.height;
+			h = h.substring(0, h.length-2);
+
+			var w = $(".content")[0].style.width;
+			w = w.substring(0, w.length-2);
+
+			editor0.nextSibling.style.height = (parseInt(h)-5)+"px";
+		  editor0.nextSibling.style.width = ((parseInt(w))/2)+"px";
+    }
+
+    winObj.draggable( { handle:'.titleBar', cursor:'move', stack:'.desktop' } )
+
+    // helper is a resize border before full window (outline mode)
+    winObj.resizable(
+      { //helper: "ui-resizable-helper",
+        resize: function( event, ui ) {
+          winSetSize(ui.size.width,ui.size.height);
+        } } );
+
+
+    winSetSize(900, 400);
+
+
+    winSetContent("<table width='100%' height='100%'>"+
+           "<tr><td width='50%' valign=top align=left><textarea id='workingCopy' style='width:100%'></textarea></td>"+
+               "<td valign=top align=left><textarea id='convertedText' style='width:100%'></textarea></td>"+
+           "</tr></table>");
+
+   
+
+   $("#title").html("&nbsp;&nbsp;&nbsp;"+ file +"&nbsp;&nbsp;&nbsp;");
+
+
+  editObj0 = configEditor("workingCopy", file);
+  editObj1 = configEditor("convertedText", file);
+
+  function status(msg) {
+    $("#status").html( msg );
+  }
+
+  function newSource() {
+    var tape = prompt("New File Name");
+    if ( tape == null ) { return; }
+    file = DISK_ROOT+ tape +".BAS";
+    $("#title").html("&nbsp;&nbsp;&nbsp;"+ file +"&nbsp;&nbsp;&nbsp;");
+    editObj0.getDoc().setValue("## FILE NAME : "+tape+"\n");
+  }
+  _newSource = newSource;
+
+  function saveCurrentSource() {
+    var content = editObj0.getDoc().getValue();
+    invokeService("save", "POST", [ [ "filecontent", content ], [ "filename", file ] ] , function(rawData, url, data) {
+      if ( rawData.indexOf("OK") == 0 ) {
+        status( file+" Saved" )
+        return
+      }
+      editObj1.getDoc().setValue(rawData);
+      $("#title").html("&nbsp;&nbsp;&nbsp;"+ file +"&nbsp;&nbsp;&nbsp;");
+    } );
+  }
+  _saveCurrentSource = saveCurrentSource;
+
+  function decodeCurrentSource() {
+    status("... preprocessing");
+    //alert( editObj0.getDoc().getValue() );
+    var content = editObj0.getDoc().getValue();
+    invokeService("tape_decode", "POST", [ [ "content", content ] ] , function(rawData, url, data) {
+      editObj1.getDoc().setValue(rawData);
+      status("");
+    } );
+  }
+
+
+  function uploadCurrentSource() {
+    status("... uploading");
+    var content = editObj0.getDoc().getValue();
+    invokeService("tape_send", "POST", [ [ "content", content ] ] , function(rawData, url, data) {
+      status(rawData);
+    } );
+  }
+
+  function reloadCurrentSource() {
+    status("... reloading");
+    var content = editObj0.getDoc().getValue();
+    invokeService("cat", "GET", [ [ "filename", file ] ] , function(rawData, url, data) {
+      editObj0.getDoc().setValue(rawData);
+      $("#title").html("&nbsp;&nbsp;&nbsp;"+ file +"&nbsp;&nbsp;&nbsp;");
+      status("");
+    } );
+  }
+  _reloadCurrentSource = reloadCurrentSource;
+    
+  function configEditor(editorId, filepath ) {
+		  var editor0 = $("#"+editorId)[0];
+		  var editorObj = CodeMirror.fromTextArea( editor0 , {
+			    //mode: 'text/x-java',
+			    //mode:  "javascript",
+			    //lineNumbers: true,
+			    mode: 'basic',
+			    matchBrackets : true,
+			    //theme:'pastel-on-dark',
+			    theme:'eclipse',
+			    showCursorWhenSelecting: true,
+			    id:editor0.id+"-edit",
+
+			    extraKeys: {
+			      "Ctrl-Alt-S": function(instance) { saveCurrentSource(); },
+			      "Ctrl-S": function(instance)     { saveCurrentSource(); },
+			      //"Ctrl-Alt-N": function(instance) { createSourceCodeEditor( winObj ); },
+			      //"Ctrl-O": function(instance) { reloadCurrentSource(); }, // works
+                  "Ctrl-O": function(instance) { clickDrive("C"); }, // TMP
+                  // doesn't work
+			      //"Ctrl-ALt-N": function(instance) { newSource(); },
+			      "Ctrl-/": "undo",
+			      "Ctrl-U" : function(instance) { uploadCurrentSource(); },
+			      "Ctrl-R" : function(instance) { decodeCurrentSource() }
+			    }
+
+			 });
+			 editorResize( editorId );
+
+		   // from /libs/services.js
+		   invokeService("cat", "GET", [ [ "filename", filepath ] ] , function(rawData, url, data) {
+		   	  editorObj.getDoc().setValue( rawData );
+		   	  var modeStr = "text/x-java";
+		   	  var fileExt = getFileExt( filepath ).toLowerCase();
+
+		   	  if ( fileExt == ".html" || fileExt == ".js" ) {
+		   	  	modeStr = "javascript";
+		   	  }
+		   	  
+		   	  if ( fileExt == ".bas" || fileExt == ".txt" ) {
+		   	  	modeStr = "basic";
+		   	  }
+		   	  editorObj.setOption( "mode", modeStr );
+		   	  // change tab header
+		   	  //me.tabHeaderJQ.html( getFileName( filepath ) );
+		   } );
+		 return editorObj;
+   }
+
+   // =====================================
+   //addWindow("win2");
+  } );
+
+// =====================================
+   
+                       
+</script>
+
+<div class="desktop">
+
+<div>
+  <table height=90%>
+   <tr style='height:70px'><td><img src="files/driveA.png" 
+         onmousedown="this.src='files/driveA_click.png'" onmouseup="this.src='files/driveA.png'"
+         ondblclick="clickDrive('A')"><div style="position:relative;top:-9px;left:10px;font-size:9px">READ CASI:</div><br/><br/></td></tr>
+  
+   <tr style='height:70px'><td><img src="files/driveB.png" 
+         onmousedown="this.src='files/driveB_click.png'" onmouseup="this.src='files/driveB.png'"
+         ondblclick="clickDrive('B')"><div style="position:relative;top:-9px;left:10px;font-size:9px">NEW TAPE</div><br/><br/></td></tr>
+ 
+   <tr style='height:70px'><td><img src="files/driveC.png" 
+         onmousedown="this.src='files/driveC_click.png'" onmouseup="this.src='files/driveC.png'"
+         ondblclick="clickDrive('C')"><div style="position:relative;top:-9px;left:10px;font-size:9px">READ DISK:</div><br/><br/></td></tr>
+  
+   <tr><td valign=bottom><img src="files/trash.png" 
+         onmousedown="this.src='files/trash_click.png'" onmouseup="this.src='files/trash.png'"
+         ondblclick="clickDrive('trash')"><div style="position:relative;top:-9px;left:25px;font-size:9px">EXIT</div></td></tr>
+  </table>
+</div>
+
+
+<div class="win" id="win1" style='position:absolute;top:50px;left:100px'>
+ <TABLE border=0 cellPadding=0 cellSpacing=0 width='100%' >
+
+      <TR class="titleBar">
+        <TD class=LGDXTopLeft width=10><IMG alt="" height=9 src="files/w1.gif"   width=10></TD>
+        <TD align=middle class=LGDXTopMid style='background-image:URL(files/titleBG.png)'><SPAN id='title' style="height:9px;font-size:8px; font-weight:bold;background:#FFF">&nbsp;&nbsp;&nbsp;TITLE&nbsp;&nbsp;&nbsp;<SPAN></TD>
+        <TD class=LGDXTopRight width=10><IMG alt="" height=9   src="files/w2.gif"     width=10></TD></TR>
+      <TR>
+        <TD class=LGDTopLeft width=10><IMG alt="" height=1 src="files/w0.gif"  width=10></TD>
+        <TD class=LGDTopMid><span id='status' style='font-size:9px'></span></TD>
+        <TD class=LGDTopRight width=10><IMG alt="" height=9     src="files/w3.gif"   width=10></TD></TR>
+      <TR>
+        <TD class=LGDMidLeft width=10><IMG alt="" height=1  src="files/w0.gif"   width=10></TD>
+        <TD class=LGDMidWin>
+          <DIV class='content'>your content<br/>your content<br/>your content<br/>your content<br/>your content<br/></DIV>
+				</TD>
+        <TD class=LGDMidRight vAlign=bottom width=10><IMG alt=""  height=10    src="files/w4.gif"   width=10></TD></TR>
+      <TR>
+        <TD class=LGDBotLeft width=10><IMG alt="" height=9   src="files/w7.gif"  width=10></TD>
+        <TD align=right class=LGDBotWin><IMG alt="" height=9   src="files/w5.gif" width=11></TD>
+        <TD class=LGDBotRight width=10><IMG alt="" height=9   src="files/w6.gif"  width=10></TD>
+			</TR>
+
+ </TABLE>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+## X-07 BASIC FILE
+## Converted by Xtase fgalliat @ 10/2016
+##
+## FILE NAME : PAR
+##
+## 
+## USE:PREPROCESSOR
+## 
+10 INIT #1,"LPT:"
+15 INPUT "PIN (0-7)";N
+18 A=2^N
+19 PRINT A
+20 OUT #1,A
+30 GOTO 19

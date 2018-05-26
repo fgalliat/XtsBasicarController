@@ -1,0 +1,13 @@
+## X-07 BASIC FILE
+## Converted by Xtase fgalliat @ 10/2016
+##
+## FILE NAME : VGA
+##
+## 
+## USE:PREPROCESSOR
+## 
+10 INIT #1,"LPT:"
+20 LPRINT "~p";
+30 LPRINT "~c";
+50 DIR #1
+60 LPRINT CHR$(10);"  -- FGALLIAT --";

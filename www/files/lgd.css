@@ -1,0 +1,159 @@
+BODY {
+	BACKGROUND: #00e700; COLOR: black; FONT-FAMILY: Verdana, Arial, Helvetica; FONT-SIZE: 12px; MARGIN: 0px
+}
+A {
+	COLOR: #ff1111; TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: #000000; TEXT-DECORATION: underline
+}
+TABLE {
+	BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BORDER-RIGHT: medium none; BORDER-TOP: medium none
+}
+TD {
+	FONT-SIZE: 11px
+}
+.welcome {
+	COLOR: #232323; FONT-SIZE: 11px; PADDING-BOTTOM: 6px; PADDING-RIGHT: 10px
+}
+.indexarea {
+	WIDTH: 350px
+}
+.thedate {
+	COLOR: #898989; FONT-SIZE: 10px
+}
+.stats {
+	FONT-SIZE: 10px
+}
+#Desk {
+	LEFT: 14px; POSITION: absolute; TOP: 11px; VISIBILITY: hidden; Z-INDEX: 1
+}
+#File {
+	LEFT: 60px; POSITION: absolute; TOP: 11px; VISIBILITY: hidden; Z-INDEX: 1
+}
+#View {
+	LEFT: 120px; POSITION: absolute; TOP: 11px; VISIBILITY: hidden; Z-INDEX: 1
+}
+#Options {
+	LEFT: 110px; POSITION: absolute; TOP: 11px; VISIBILITY: hidden; Z-INDEX: 1
+}
+.rating {
+	FONT-WEIGHT: bold; WIDTH: 360px
+}
+.magazinetitle {
+	FONT-SIZE: 14px; FONT-WEIGHT: bold
+}
+.gemdropdown {
+	BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 1px solid
+}
+.shot {
+	BORDER-BOTTOM: 1px solid; BORDER-LEFT: 1px solid; BORDER-RIGHT: 1px solid; BORDER-TOP: 1px solid; MARGIN: 6px 35px
+}
+.url {
+	MARGIN-BOTTOM: 8px; MARGIN-LEFT: 16px; MARGIN-TOP: 8px
+}
+.gem {
+	PADDING-BOTTOM: 10px
+}
+.footer {
+	COLOR: black; FONT-SIZE: 8px
+}
+.threadHTML {
+	FONT-SIZE: 10px
+}
+.genre {
+	COLOR: black; FONT-SIZE: 10px
+}
+.team {
+	COLOR: black; FONT-SIZE: 10px
+}
+.maginfo {
+	COLOR: black; FONT-SIZE: 10px
+}
+.sequel {
+	COLOR: black; FONT-SIZE: 10px
+}
+.threadpost {
+	BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 0px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; WIDTH: 90%
+}
+.editbutton {
+	BACKGROUND-COLOR: #2f60ff; BORDER-BOTTOM: #002f9f 2px solid; BORDER-LEFT: #9fcfff 2px solid; BORDER-RIGHT: #002f9f 2px solid; BORDER-TOP: #9fcfff 2px solid; COLOR: #ffffff; CURSOR: hand; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 7.5pt; FONT-WEIGHT: bold; HEIGHT: 17px; MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px; TEXT-ALIGN: center; WIDTH: 90px
+}
+.adminbutton {
+	BACKGROUND-COLOR: #ff3333; BORDER-BOTTOM: #2f009f 2px solid; BORDER-LEFT: #cf9fff 2px solid; BORDER-RIGHT: #2f009f 2px solid; BORDER-TOP: #cf9fff 2px solid; COLOR: #ffffff; CURSOR: hand; FONT-FAMILY: Verdana,Arial,Helvetica; FONT-SIZE: 7.5pt; FONT-WEIGHT: bold; HEIGHT: 17px; MARGIN-BOTTOM: 0px; MARGIN-TOP: 0px; TEXT-ALIGN: center; WIDTH: 90px
+}
+.gemmenu {
+	BACKGROUND: white; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 0px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid; PADDING-BOTTOM: 0px; PADDING-LEFT: 0px; PADDING-RIGHT: 0px; PADDING-TOP: 0px; WIDTH: 100%
+}
+.content {
+	PADDING-RIGHT: 20px
+}
+.GAMEList {
+	BORDER-BOTTOM: black 0px dotted; BORDER-LEFT: black 0px dotted; BORDER-RIGHT: black 1px dotted; BORDER-TOP: black 0px dotted
+}
+.LGDMidLeft {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 0px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid
+}
+.LGDMidWin {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 0px solid; BORDER-LEFT: black 0px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid
+}
+.LGDMidRight {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 0px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 3px solid; BORDER-TOP: black 0px solid
+}
+.LGDBotLeft {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 2px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px solid
+}
+.LGDBotWin {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 2px solid; BORDER-LEFT: black 0px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 1px solid
+}
+.LGDBotRight {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 2px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 3px solid; BORDER-TOP: black 1px solid
+}
+.LGDTopRight {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 3px solid; BORDER-TOP: black 0px solid
+}
+.LGDTopMid {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 0px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid
+}
+.LGDTopLeft {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 0px solid
+}
+.LGDXTopLeft {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px solid
+}
+.LGDXTopMid {
+	BACKGROUND: url(/g/w8.gif) #ffffff; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 0px solid; BORDER-RIGHT: black 0px solid; BORDER-TOP: black 1px solid
+}
+.LGDXTopRight {
+	BACKGROUND: #ffffff; BORDER-BOTTOM: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-RIGHT: black 3px solid; BORDER-TOP: black 1px solid
+}
+TEXTAREA {
+	FONT-FAMILY: Verdana, Arial, Clean, Helvetica, sans-serif; FONT-SIZE: 12px; WIDTH: 500px
+}
+.PhorumListTable {
+	BORDER-BOTTOM-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-RIGHT-WIDTH: 0px; BORDER-TOP-WIDTH: 0px
+}
+.PhorumTableHeader {
+	FONT-FAMILY: Verdana, Arial, Clean, Helvetica, sans-serif; FONT-SIZE: 12px
+}
+.PhorumListRow {
+	FONT-FAMILY: Verdana, Arial, Clean, Helvetica, sans-serif; FONT-SIZE: 12px; HEIGHT: 21px
+}
+.PhorumListHeader {
+	FONT-FAMILY: Arial, Verdana, Arial, Clean, Helvetica, sans-serif; FONT-SIZE: 14px; FONT-WEIGHT: bold
+}
+.PhorumForumTitle {
+	FONT-FAMILY: Verdana, Arial, Clean, Helvetica, sans-serif; FONT-SIZE: 14px; FONT-WEIGHT: bold
+}
+.PhorumTableHeader {
+	FONT-FAMILY: Arial, Verdana, Arial, Clean, Helvetica, sans-serif; FONT-SIZE: 14px
+}
+.PhorumNav {
+	FONT-FAMILY: Geneva, Verdana, MS Sans Serif , Clean, sans-serif; FONT-SIZE: 10px
+}
+.PhorumNewFlag {
+	COLOR: #33cc00; FONT-FAMILY: Geneva, Verdana, MS Sans Serif , Clean, sans-serif; FONT-SIZE: 10px
+}
+.PhorumMessage {
+	FONT-FAMILY: Courier New, Geneva, Courier, Clean; FONT-SIZE: 12px
+}

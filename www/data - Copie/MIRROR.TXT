@@ -1,0 +1,18 @@
+## X-07 BASIC FILE
+## Converted by Xtase fgalliat @ 10/2016
+##
+## FILE NAME : MIRROR
+##
+## 
+## USE:PREPROCESSOR
+## 
+10 INIT #1,"LPT:"
+15 LPRINT "~C";
+30 FOR Y=0 TO 3
+40 FOR X=0 TO 19
+45 A = SCREEN(X,Y)
+47 OUT #1,A
+60 NEXT X
+70 NEXT Y
+90 LPRINT "...................";
+95 LPRINT " ..  FGALLIAT  .. ";
