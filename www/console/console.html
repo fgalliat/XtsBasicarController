@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Web Socket Example</title>
+    <meta charset="UTF-8">
+      
+    <script>
+      function WSWrapper(str) {
+        var ws = null;
+        
+        try { 
+          ws = new WebSocket(str);
+        } catch(ex) {
+          ws = new MozWebSocket(str);
+        }
+        
+        return ws;
+      }
+    </script>
+      
+    <script>
+      var log = "";
+      var s = null;
+      window.onload = function() {
+      };
+    </script>
+
+    <style>
+      button { background-color: black; color:#0F0; }
+      body   { overflow: hidden; }
+    </style>
+  </head>
+    <body style='margin-top:0px; margin-left: 0px; padding-top:0px;'>
+      <table border=0 cellpadding=0 cellspacing=0>
+        <tr>
+          <td>
+<!-- @@@@@@@@@@@@@@@@@ Lightweight Console @@@@@@@@@@@@@@@@@@ -->
+<script>
+  if ( __telnetInstances == null ) {
+    var __telnetInstances = [];
+  }
+  
+  function LiteTelnet(port, extMode) {
+    if ( port == null ) { port = 9877; }
+    if ( extMode == null ) { extMode = false; }
+    
+    var realTelnetMode = false;
+    // TODO : better
+    realTelnetMode = extMode;
+    
+    var me = this;
+    
+    me.id = __telnetInstances.length;
+    __telnetInstances.push(me);
+    
+    me.realTelnetMode = realTelnetMode;
+    me.extMode = extMode;
+    me.port = port;
+    me.telSk = null;
+    
+    
+    me.inputCache = [];
+    
+    me.connect = function() {
+      me.host = document.getElementById('wsTxt'+me.id).value;
+      me.telSk = WSWrapper(me.host);
+      
+      me.telSk.onopen = function(e) { 
+        me.console_cls();
+        me.console_write("(ii) Connected to "+ me.host +".\n");
+      }
+  
+      me.telSk.onclose = function(e) { me.console_write("(ii) Connection closed.\n"); }
+  
+      me.telSk.onmessage = function(e) { 
+        //me.console_write(e.data+"\n", true); 
+        me.inputCache.push(e.data);
+      }
+        
+      var refreshPeriod = 50;
+      var tInID = setInterval("__telnetInstances["+me.id+"].popMessage();", refreshPeriod);
+    }
+    
+    me.popMessage = function() {
+      //var msg = me.inputCache.pop(); // LIFO
+      var msg = me.inputCache.shift(); // FIFO
+      if ( msg != null ) {
+        me.console_write(msg, true);
+      }
+    }
+      
+    me.disconnect = function() {
+      // me.telSk.send("exit\n");
+      me.telSk.send("/quit\n");
+      me.telSk.close();
+    }
+
+    me.upload = function() {
+      window.parent.status("request to upload "+window.parent.getFilename() );
+      me.telSk.send("UPLOAD \n");
+    }
+  
+    me.lastCmds = [];
+    me.lastCmdsCursor = 0;
+    me.send = function(cmd) {
+      var fromTxtBox = false;
+      if (cmd == null) { fromTxtBox = true; cmd = document.getElementById('cmdTxt'+me.id).value; }
+      me.telSk.send(cmd+"\n");
+      if (fromTxtBox) { document.getElementById('cmdTxt'+me.id).value = ''; }
+      me.lastCmds.push(cmd);
+      me.lastCmdsCursor = me.lastCmds.length;
+    }
+      
+    me.recallLastCmd = function() {
+      me.lastCmdsCursor--;
+      if ( me.lastCmdsCursor >= me.lastCmds.length ) { me.lastCmdsCursor = me.lastCmds.length-1; }
+      if ( me.lastCmds[ me.lastCmdsCursor ] == null ) return;
+      document.getElementById('cmdTxt'+me.id).value = me.lastCmds[ me.lastCmdsCursor ];
+    }
+      
+    me.recallNextCmd = function() {
+      me.lastCmdsCursor++;
+      if ( me.lastCmdsCursor <= 0 ) { me.lastCmdsCursor = 0; }
+      if ( me.lastCmds[ me.lastCmdsCursor ] == null ) return;
+      document.getElementById('cmdTxt'+me.id).value = me.lastCmds[ me.lastCmdsCursor ];
+    }
+  
+    me.console_cls = function() {
+      document.getElementById('consoleTxt'+me.id).value = '';
+    }
+  
+    me.console_write = function(str, dump) {
+      if (dump == null) { dump = false; }
+      
+      // TMP !!!!
+      dump = false;
+      
+      var txtArea = document.getElementById('consoleTxt'+me.id);
+      
+      var txt = txtArea.value;
+      var parsed = null;
+      if ( !me.realTelnetMode ) { parsed = ""+str } 
+      else {
+
+        parsed = "";
+        
+        // TODO : better
+        var inEscapeMode = false;
+        for(var i=0; i < str.length; i++) {
+          var chInt = str.charCodeAt(i);
+          var ch    = str.charAt(i);
+          if ( chInt == 27 ) {
+            // \27 [ 1 ; 3 2 => cyan
+            // \27 [ 1 ; 3 6 => vert
+            inEscapeMode = true;
+          }
+          
+          if ( !inEscapeMode ) {
+            parsed += ch;
+          } else if ( ch == 'm' ) {
+            inEscapeMode = false;
+          }
+        }
+        
+        if ( dump ) {
+          var hexDump = "";
+          var decDump = "";
+          
+          for(var i=0; i < str.length; i++) {
+            
+            var chInt = str.charCodeAt(i);
+            var ch    = str.charAt(i);
+            decDump += "["+chInt+"]"+ch+" ";
+            
+            // TODO
+            var chHex = chInt;
+            hexDump += "["+chHex+"]"+ch+" ";
+          }
+          
+          document.getElementById('hexDumpTxt'+me.id).value += hexDump;
+          document.getElementById('decDumpTxt'+me.id).value += decDump;
+        }
+      }
+      txt += parsed;
+      txtArea.value = txt;
+      txtArea.scrollTop = txtArea.scrollHeight;
+    }
+  
+    me.getConsole = function() {
+      var bigHeight = 400;
+      var txtHeight = me.extMode ? bigHeight - 70 : 110; //130;
+      var txtBold = 'font-weight:bold;';
+      var bigWidth = 800;
+      var smallWidth = 500;
+      return '  <table border=0 cellpadding=0 cellspacing=0 style="background-color:#000;'+ (me.extMode ? 'width:'+ bigWidth +'px; height:'+ bigHeight +'px' : 'width:'+ smallWidth +'px;') +'">\n'+
+        '    <tr>\n'+
+        '      <td colspan=2><input type="text" value="ws://localhost:'+ me.port +'/" name="wsTxt'+me.id+'" id="wsTxt'+me.id+'" style="'+txtBold+'background-color:#000;color:#0F0;width:100%" /></td>\n'+
+        // '      <td colspan=1 style="width:70px"><button onclick="__telnetInstances['+me.id+'].connect();" />CONN.</button></td>\n'+
+        // '      <td colspan=2 style="width:70px"><button onclick="__telnetInstances['+me.id+'].disconnect();" />DISCN.</button></td>\n'+
+        '      <td colspan=3 align=right><button onclick="__telnetInstances['+me.id+'].connect();" />CONN.</button>\n'+
+          '<button onclick="__telnetInstances['+me.id+'].disconnect();" />DISCN.</button>\n'+
+          '<button onclick="__telnetInstances['+me.id+'].upload();" />UPLOAD</button></td>\n'+
+        '    </tr>\n'+
+        '    <tr>\n'+
+        '      <td colspan=5>\n'+
+        '        <textarea name="consoleTxt'+me.id+'" id="consoleTxt'+me.id+'" readonly \n'+
+        '          style="'+txtBold+'background-color:#000;color:#0F0;width:100%;height:'+ txtHeight +'px">\n'+
+        //'test\n'+
+        '</textarea>\n'+
+        '      </td>\n'+
+        '    </tr>\n'+
+        '    <tr>\n'+
+        '      <td colspan=4><input type="text" name="cmdTxt'+me.id+'" id="cmdTxt'+me.id+'" value="ls /" style="'+txtBold+'width:100%;background-color:#000;color:#0F0;" '+
+                  //'onkeydown="alert(event.keyCode);" '+
+                  // TODO trmit space fore ' | more '
+                  'onkeydown="var kc=event.keyCode; '+
+                  'if ( kc == 13 ) { __telnetInstances['+me.id+'].send(); } '+
+                  'else if ( kc == 38 ) { __telnetInstances['+me.id+'].recallLastCmd(); } '+
+                  'else if ( kc == 40 ) { __telnetInstances['+me.id+'].recallNextCmd(); } '+
+                  '" '+
+                  '/></td>\n'+
+        '      <td colspan=1 style="width:35px" align="right"><button onclick="__telnetInstances['+me.id+'].send();" />-&gt;</button></td>\n'+
+        '    </tr>\n'+
+        // TMP.....
+        ( false && me.extMode ? 
+         '    <tr>\n'+
+         '      <td colspan=4>\n'+
+         '        <input type="text" name="hexDumpTxt'+me.id+'" id="hexDumpTxt'+me.id+'" value="" style="'+txtBold+'width:100%;background-color:#000;color:#0F0;" />\n'+
+         '      </td>\n'+
+         '      <td colspan=1 style="width:40px"><input type="button" name="X" value="X" onclick="document.getElementById(\'hexDumpTxt'+me.id+'\').value =\'\'; document.getElementById(\'decDumpTxt'+me.id+'\').value =\'\';" /></td>\n'+
+         '    </tr>\n'+
+         '    <tr>\n'+
+         '      <td colspan=4>\n'+
+         '        <input type="text" name="decDumpTxt'+me.id+'" id="decDumpTxt'+me.id+'" value="" style="'+txtBold+'width:100%;background-color:#000;color:#0F0;" />\n'+
+         '      </td>\n'+
+         '      <td colspan=1 style="width:40px"><button name="X" value="X" onclick="document.getElementById(\'hexDumpTxt'+me.id+'\').value =\'\'; document.getElementById(\'decDumpTxt'+me.id+'\').value =\'\';" />X</button></td>\n'+
+         '    </tr>\n'
+         : '' )+
+        '  </table>\n'+ 
+        '';
+    }
+  }
+
+  //document.write( "Homebrewed Telnet Server" );
+  // document.write( new LiteTelnet(9877).getConsole() );
+</script>
+        
+          </td>
+          <td>
+<script>
+  //document.write( new LiteTelnet(9878, true).getConsole() );
+  document.write( new LiteTelnet(9878, false).getConsole() );
+</script>
+          </td>
+        </tr> <!-- 
+        <tr>
+          <td colspan=2>
+  TODO: send Ctrl-C 
+          </td>
+        </tr> -->
+      </table>
+    </body>
+</html>

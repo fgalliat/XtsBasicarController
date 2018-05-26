@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Virtual Tape Manager</title>
+  <title>Xts-uBASIC Manager</title>
   
   <script type="text/javascript" src="./config/config.js"></script>
   <script type="text/javascript" src="./libs/services.js"></script>
@@ -57,6 +57,9 @@
   var editObj1 = null;
 
   var file = DISK_ROOT+"GAME.BAS";
+  function getFilename() {
+    return file;
+  }
 
   var _reloadCurrentSource = null; // futur holder for fct
   var _saveCurrentSource = null; // futur holder for fct
@@ -107,65 +110,7 @@
     }
   }
 
-  $( function() {
-    //var winObj = $(".win #win1");
-    var winObj = $("#win1");
-
-    
-    var winSetSize = function(width,height) {
-      var contentDiv = $(".content")[0];
-      contentDiv.style.height = (height - 30)+"px";
-      contentDiv.style.width = (width - 10)+"px";
-      
-      editorResize("workingCopy");
-      editorResize("convertedText");
-    }
-
-    var winSetContent = function(_html) {
-      $(".content").html(_html);
-    }
-
-
-    var editorResize = function(editorID) {
-      var editor0 = $("#"+editorID)[0];
-      if ( editor0 == null ) { return; }
-
-      var h = $(".content")[0].style.height;
-			h = h.substring(0, h.length-2);
-
-			var w = $(".content")[0].style.width;
-			w = w.substring(0, w.length-2);
-
-			editor0.nextSibling.style.height = (parseInt(h)-5)+"px";
-		  editor0.nextSibling.style.width = ((parseInt(w))/2)+"px";
-    }
-
-    winObj.draggable( { handle:'.titleBar', cursor:'move', stack:'.desktop' } )
-
-    // helper is a resize border before full window (outline mode)
-    winObj.resizable(
-      { //helper: "ui-resizable-helper",
-        resize: function( event, ui ) {
-          winSetSize(ui.size.width,ui.size.height);
-        } } );
-
-
-    winSetSize(900, 400);
-
-
-    winSetContent("<table width='100%' height='100%'>"+
-           "<tr><td width='50%' valign=top align=left><textarea id='workingCopy' style='width:100%'></textarea></td>"+
-               "<td valign=top align=left><textarea id='convertedText' style='width:100%'></textarea></td>"+
-           "</tr></table>");
-
-   
-
-   $("#title").html("&nbsp;&nbsp;&nbsp;"+ file +"&nbsp;&nbsp;&nbsp;");
-
-
-  editObj0 = configEditor("workingCopy", file);
-  editObj1 = configEditor("convertedText", file);
-
+  // =================================================================
   function status(msg) {
     $("#status").html( msg );
   }
@@ -220,6 +165,68 @@
       status("");
     } );
   }
+  // =================================================================
+
+  $( function() {
+    //var winObj = $(".win #win1");
+    var winObj = $("#win1");
+
+    
+    var winSetSize = function(id, width,height) {
+      var contentDiv = $("#"+id).find(".content")[0];
+      contentDiv.style.height = (height - 30)+"px";
+      contentDiv.style.width = (width - 10)+"px";
+      
+      editorResize("workingCopy");
+      editorResize("convertedText");
+    }
+
+    var winSetContent = function(id, _html) {
+      $("#"+id).find(".content").html(_html);
+    }
+
+
+    var editorResize = function(editorID) {
+      var editor0 = winObj.find("#"+editorID)[0];
+      if ( editor0 == null ) { return; }
+
+      var h = winObj.find(".content")[0].style.height;
+			h = h.substring(0, h.length-2);
+
+			var w = winObj.find(".content")[0].style.width;
+			w = w.substring(0, w.length-2);
+
+			editor0.nextSibling.style.height = (parseInt(h)-5)+"px";
+		  editor0.nextSibling.style.width = ((parseInt(w))/2)+"px";
+    }
+
+    winObj.draggable( { handle:'.titleBar', cursor:'move', stack:'.desktop' } )
+
+    // helper is a resize border before full window (outline mode)
+    winObj.resizable(
+      { //helper: "ui-resizable-helper",
+        resize: function( event, ui ) {
+          winSetSize(ui.size.width,ui.size.height);
+        } } );
+
+
+    winSetSize("win1", 900, 400);
+
+
+    winSetContent("win1", "<table width='100%' height='100%'>"+
+           "<tr><td width='50%' valign=top align=left><textarea id='workingCopy' style='width:100%'></textarea></td>"+
+               "<td valign=top align=left><textarea id='convertedText' style='width:100%'></textarea></td>"+
+           "</tr></table>");
+
+   
+   // sets the title
+   $("#win1").find("#title").html("&nbsp;&nbsp;&nbsp;"+ file +"&nbsp;&nbsp;&nbsp;");
+
+
+  editObj0 = configEditor("workingCopy", file);
+  editObj1 = configEditor("convertedText", file);
+
+
   _reloadCurrentSource = reloadCurrentSource;
     
   function configEditor(editorId, filepath ) {
@@ -273,6 +280,13 @@
 
    // =====================================
    //addWindow("win2");
+
+
+    winSetSize("win2", 490, 200);
+
+
+    winSetContent("win2", "<iframe src='./console/console.html' style='height:"+(170)+"px; width:"+ (500) +"px; border:0px; '></iframe>");
+
   } );
 
 // =====================================
@@ -302,32 +316,59 @@
   </table>
 </div>
 
-
+<!-- editor window -->
 <div class="win" id="win1" style='position:absolute;top:50px;left:100px'>
- <TABLE border=0 cellPadding=0 cellSpacing=0 width='100%' >
+  <TABLE border=0 cellPadding=0 cellSpacing=0 width='100%' >
+ 
+       <TR class="titleBar">
+         <TD class=LGDXTopLeft width=10><IMG alt="" height=9 src="files/w1.gif"   width=10></TD>
+         <TD align=middle class=LGDXTopMid style='background-image:URL(files/titleBG.png)'><SPAN id='title' style="height:9px;font-size:8px; font-weight:bold;background:#FFF">&nbsp;&nbsp;&nbsp;TITLE&nbsp;&nbsp;&nbsp;<SPAN></TD>
+         <TD class=LGDXTopRight width=10><IMG alt="" height=9   src="files/w2.gif"     width=10></TD></TR>
+       <TR>
+         <TD class=LGDTopLeft width=10><IMG alt="" height=1 src="files/w0.gif"  width=10></TD>
+         <TD class=LGDTopMid><span id='status' style='font-size:9px'></span></TD>
+         <TD class=LGDTopRight width=10><IMG alt="" height=9     src="files/w3.gif"   width=10></TD></TR>
+       <TR>
+         <TD class=LGDMidLeft width=10><IMG alt="" height=1  src="files/w0.gif"   width=10></TD>
+         <TD class=LGDMidWin>
+           <DIV class='content'>your content<br/>your content<br/>your content<br/>your content<br/>your content<br/></DIV>
+         </TD>
+         <TD class=LGDMidRight vAlign=bottom width=10><IMG alt=""  height=10    src="files/w4.gif"   width=10></TD></TR>
+       <TR>
+         <TD class=LGDBotLeft width=10><IMG alt="" height=9   src="files/w7.gif"  width=10></TD>
+         <TD align=right class=LGDBotWin><IMG alt="" height=9   src="files/w5.gif" width=11></TD>
+         <TD class=LGDBotRight width=10><IMG alt="" height=9   src="files/w6.gif"  width=10></TD>
+       </TR>
+ 
+  </TABLE>
+ </div>
 
-      <TR class="titleBar">
-        <TD class=LGDXTopLeft width=10><IMG alt="" height=9 src="files/w1.gif"   width=10></TD>
-        <TD align=middle class=LGDXTopMid style='background-image:URL(files/titleBG.png)'><SPAN id='title' style="height:9px;font-size:8px; font-weight:bold;background:#FFF">&nbsp;&nbsp;&nbsp;TITLE&nbsp;&nbsp;&nbsp;<SPAN></TD>
-        <TD class=LGDXTopRight width=10><IMG alt="" height=9   src="files/w2.gif"     width=10></TD></TR>
-      <TR>
-        <TD class=LGDTopLeft width=10><IMG alt="" height=1 src="files/w0.gif"  width=10></TD>
-        <TD class=LGDTopMid><span id='status' style='font-size:9px'></span></TD>
-        <TD class=LGDTopRight width=10><IMG alt="" height=9     src="files/w3.gif"   width=10></TD></TR>
-      <TR>
-        <TD class=LGDMidLeft width=10><IMG alt="" height=1  src="files/w0.gif"   width=10></TD>
-        <TD class=LGDMidWin>
-          <DIV class='content'>your content<br/>your content<br/>your content<br/>your content<br/>your content<br/></DIV>
-				</TD>
-        <TD class=LGDMidRight vAlign=bottom width=10><IMG alt=""  height=10    src="files/w4.gif"   width=10></TD></TR>
-      <TR>
-        <TD class=LGDBotLeft width=10><IMG alt="" height=9   src="files/w7.gif"  width=10></TD>
-        <TD align=right class=LGDBotWin><IMG alt="" height=9   src="files/w5.gif" width=11></TD>
-        <TD class=LGDBotRight width=10><IMG alt="" height=9   src="files/w6.gif"  width=10></TD>
-			</TR>
-
- </TABLE>
-</div>
+ <!-- console window -->
+ <div class="win" id="win2" style='position:absolute;top:470px;left:100px'>
+  <TABLE border=0 cellPadding=0 cellSpacing=0 width='100%' >
+ 
+       <TR class="titleBar">
+         <TD class=LGDXTopLeft width=10><IMG alt="" height=9 src="files/w1.gif"   width=10></TD>
+         <TD align=middle class=LGDXTopMid style='background-image:URL(files/titleBG.png)'><SPAN id='title' style="height:9px;font-size:8px; font-weight:bold;background:#FFF">&nbsp;&nbsp;&nbsp;SYSTEM&nbsp;&nbsp;&nbsp;<SPAN></TD>
+         <TD class=LGDXTopRight width=10><IMG alt="" height=9   src="files/w2.gif"     width=10></TD></TR>
+       <TR>
+         <TD class=LGDTopLeft width=10><IMG alt="" height=1 src="files/w0.gif"  width=10></TD>
+         <TD class=LGDTopMid><span id='status2' style='font-size:9px'></span></TD>
+         <TD class=LGDTopRight width=10><IMG alt="" height=9     src="files/w3.gif"   width=10></TD></TR>
+       <TR>
+         <TD class=LGDMidLeft width=10><IMG alt="" height=1  src="files/w0.gif"   width=10></TD>
+         <TD class=LGDMidWin>
+           <DIV class='content'>your content<br/>your content<br/>your content<br/>your content<br/>your content<br/></DIV>
+         </TD>
+         <TD class=LGDMidRight vAlign=bottom width=10><IMG alt=""  height=10    src="files/w4.gif"   width=10></TD></TR>
+       <TR>
+         <TD class=LGDBotLeft width=10><IMG alt="" height=9   src="files/w7.gif"  width=10></TD>
+         <TD align=right class=LGDBotWin><IMG alt="" height=9   src="files/w5.gif" width=11></TD>
+         <TD class=LGDBotRight width=10><IMG alt="" height=9   src="files/w6.gif"  width=10></TD>
+       </TR>
+ 
+  </TABLE>
+ </div>
 
 </div>
 
