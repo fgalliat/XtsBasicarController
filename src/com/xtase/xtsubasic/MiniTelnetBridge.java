@@ -42,7 +42,7 @@ public class MiniTelnetBridge {
 
             // Greeting sequence .....
             pocketWrite("Hello \n");
-            pocketReadline();
+            // pocketReadline();
 
             return true;
         } catch (Exception ex) {
@@ -53,19 +53,20 @@ public class MiniTelnetBridge {
     }
 
     protected void disconnectFromPocket() {
-        if (!this.isPocketConnected()) {
-            return;
-        }
+        //if (!this.isPocketConnected()) {
+        //    return;
+        //}
         try {
             this.espOut.write("/quit\n".getBytes());
             this.espOut.flush();
 
             this.espSk.close();
 
-            this.espConn = false;
+            // this.espConn = false;
         } catch (Exception ex) {
-            this.espConn = false;
         }
+        this.espSk = null;
+        this.espConn = false;
     }
 
     protected boolean pocketWrite(String str) {
@@ -119,8 +120,23 @@ public class MiniTelnetBridge {
             Socket sk = ssk.accept();
             _("connected on :" + port);
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream()));
-            PrintStream out = new PrintStream(sk.getOutputStream());
+            final BufferedReader in = new BufferedReader(new InputStreamReader(sk.getInputStream()));
+            final PrintStream out = new PrintStream(sk.getOutputStream());
+
+            new Thread() {
+                public void run() {
+                    while (true) {
+                        if (!isPocketConnected()) {
+                            Zzz(300);
+                        } else {
+                            String answer = pocketReadline(); // beware w/ that (on real xtsPck)
+                            System.out.println( "$$ "+answer+" $$" );
+                            out.println(">" + answer);
+                        }
+                    }
+                }
+            }.start();
+
 
             out.println("Hi, please connect to XtsPocket");
             String line;
@@ -143,12 +159,8 @@ public class MiniTelnetBridge {
                 }
                 System.out.println("> " + line);
 
-                pocketWrite( line+"\n" );
-                String answer = pocketReadline();
+                pocketWrite(line + "\n");
 
-
-                // out.println("OK " + new Date().getSeconds());
-                out.println(">"+answer);
             }
 
             sk.close();
@@ -162,5 +174,11 @@ public class MiniTelnetBridge {
         System.out.println(o);
     }
 
+    static void Zzz(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (Exception ex) {
+        }
+    }
 }
 
