@@ -83,7 +83,14 @@ public class PreProcessor {
 
 			String lineNum = line.split(" ")[0];
 
-			String lineRest = line.substring((lineNum + " ").length());
+
+			String lineRest = null;
+			try { lineRest = line.substring((lineNum + " ").length()); }
+			catch(Exception ex) {
+				System.err.println("(EE) on line => "+line);
+				ex.printStackTrace();
+			}
+
 			lineRest = lineRest.trim();
 
 			if (lineRest.toUpperCase().startsWith("REM DFLBL ")) {

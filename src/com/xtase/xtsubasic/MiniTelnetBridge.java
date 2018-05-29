@@ -1,5 +1,7 @@
 package com.xtase.xtsubasic;
 
+import com.xtase.file.FileUtils;
+
 import java.io.*;
 import java.util.*;
 import java.net.*;
@@ -108,8 +110,45 @@ public class MiniTelnetBridge {
         }
     }
 
+    protected boolean pocketUploadFile(File src, String dstName) {
+        try {
+            int size = (int) src.length();
+
+            byte[] buff = new byte[size];
+            FileInputStream fis = new FileInputStream(src);
+            fis.read(buff);
+            fis.close();
+
+            pocketWrite("EXEC \"WIFI\",\"UPLOAD\" \n");
+            Zzz(100);
+            pocketWrite(dstName + "\n");
+            pocketWrite("" + size + "\n");
+            Zzz(300);
+
+            espOut.write(buff, 0, size);
+            espOut.flush();
+
+            String line;
+            while ((line = pocketReadline()) != null) {
+                if (line.equalsIgnoreCase("-EOF-")) {
+                    break;
+                }
+            }
+            _("Client received the file");
+
+            pocketWrite("\n");
+            Zzz(300);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
     // ==============================
 
+    boolean listenLocked = false;
 
     public void doWork(int port) throws Exception {
         ServerSocket ssk = new ServerSocket(port);
@@ -126,11 +165,11 @@ public class MiniTelnetBridge {
             new Thread() {
                 public void run() {
                     while (true) {
-                        if (!isPocketConnected()) {
+                        if (!isPocketConnected() || listenLocked) {
                             Zzz(300);
                         } else {
                             String answer = pocketReadline(); // beware w/ that (on real xtsPck)
-                            System.out.println( "$$ "+answer+" $$" );
+                            System.out.println("$$ " + answer + " $$");
                             out.println(">" + answer);
                         }
                     }
@@ -153,13 +192,55 @@ public class MiniTelnetBridge {
                 } else if (line.equals("/quit")) {
                     disconnectFromPocket();
                     // break;
+                } else if (line.startsWith("/upload ")) {
+                    listenLocked = true;
+                    // ONLY upload PRGMs @ this time.....
+                    // no ext provided
+
+                    String entryName = line.substring("/upload ".length()).trim();
+
+                    if (entryName.contains(".")) {
+                        out.println("Sorry only PRGMs are allowed for now");
+                    } else {
+                        out.println("Ok, let try to upload " + entryName + "...");
+
+                        // TMP : use config file !!!!!!!!!
+                        File srcRoot = new File("/vm_mnt/devl/BASIC/XtsBasicarController/www/data/");
+
+                        // BEWARE : case sensitive !
+                        File src = new File(srcRoot, entryName + ".TXT");
+
+                        File toSend = null;
+
+                        if (src.exists()) {
+                            String parsedSource = PreProcessor.decode(FileUtils.cat(src.getAbsolutePath()));
+                            toSend = new File(srcRoot, entryName + ".BAS");
+                            FileUtils.write(toSend.getAbsolutePath(), parsedSource+"\n");
+                        } else {
+                            src = new File(srcRoot, entryName + ".BAS");
+                            if (src.exists()) {
+                                toSend = new File(srcRoot, entryName + ".BAS");
+                            } else {
+                                toSend = null;
+                            }
+                        }
+
+                        if (toSend == null) {
+                            out.println("File not found !!");
+                        } else {
+                            boolean ok = pocketUploadFile(toSend, entryName.toUpperCase() + ".BAS");
+                            out.println("success : " + ok);
+                        }
+
+                    }
+                    listenLocked = false;
                 } else if (line.equals("/kill")) {
                     kill = true;
                     break;
+                } else {
+                    System.out.println("> " + line);
+                    pocketWrite(line + "\n");
                 }
-                System.out.println("> " + line);
-
-                pocketWrite(line + "\n");
 
             }
 
