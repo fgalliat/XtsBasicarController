@@ -95,9 +95,9 @@
       me.telSk.close();
     }
 
-    me.upload = function() {
-      window.parent.status("request to upload "+window.parent.getFilename() );
-      me.telSk.send("UPLOAD \n");
+    me.upload = function(name) {
+      // window.parent.status("request to upload "+window.parent.getFilename() );
+      me.telSk.send("/upload "+name+"\n");
     }
   
     me.lastCmds = [];
@@ -249,7 +249,19 @@
           <td>
 <script>
   //document.write( new LiteTelnet(9878, true).getConsole() );
-  document.write( new LiteTelnet(9878, false).getConsole() );
+  var telnet = new LiteTelnet(9878, false);
+  document.write( telnet.getConsole() );
+
+
+  consoleUpload = function() {
+    var fullPath = window.parent.getFilename();
+    // alert( window.parent.getFilename() );
+    var name = fullPath.substring( fullPath.lastIndexOf('/')+1 );
+    name = name.substring( 0, name.lastIndexOf('.') );
+    //alert( name );
+    telnet.upload( name );
+  }
+
 </script>
           </td>
         </tr> <!-- 
